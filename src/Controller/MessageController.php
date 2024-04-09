@@ -82,7 +82,7 @@ class MessageController extends AbstractController
     #[Route('/messages/send', methods: ['GET'])]
     public function send(Request $request, MessageBusInterface $bus): Response
     {
-        $text = $request->query->get('text');
+        $text = $request->query->getString('text');
         
         if (!$text) {
             return new Response('Text is required', 400);

@@ -21,6 +21,9 @@ class MessageRepository extends ServiceEntityRepository
         parent::__construct($registry, Message::class);
     }
 
+    /**
+     * @return Message[]
+     */
     public function findByStatus(?string $status = null): array
     {
         return $this->findBy($status ? ['status' => $status] : []);

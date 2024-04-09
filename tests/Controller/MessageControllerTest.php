@@ -41,6 +41,9 @@ class MessageControllerTest extends WebTestCase
 
         $methodFindByStatus = $messageRepositoryMock->expects($invokedCount)->method('findByStatus');
         if($responseCode === Response::HTTP_OK) {
+            /**
+             * @var array<string, array<int, array{uuid: string, text:string, status:string}>> $responseArray
+             */
             $responseArray = json_decode($responseMessage, true);
             $message = new Message();
             $message->setStatus($responseArray['messages'][0]['status']);
