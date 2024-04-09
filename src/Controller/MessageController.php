@@ -18,9 +18,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class MessageController extends AbstractController
 {
-    /**
-     * TODO: cover this method with tests
-     */
+
     /**
      * Route should be limited to GET method, only GET method should be used to retrieve data (RESTful standard) and
      * all other methods should return code 405 for this endpoint.
