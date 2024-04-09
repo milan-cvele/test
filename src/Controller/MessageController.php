@@ -5,18 +5,21 @@ namespace App\Controller;
 
 use App\Message\SendMessage;
 use App\Repository\MessageRepository;
-use Controller\MessageControllerTest;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class MessageController extends AbstractController
 {
     /**
-     * TODO: cover this method with tests, and refactor the code (including other files that need to be refactored)
+     * TODO: cover this method with tests
      */
     /**
      * Route should be limited to GET method, only GET method should be used to retrieve data (RESTful standard) and
@@ -39,22 +42,27 @@ class MessageController extends AbstractController
      * Serializer should be utilized in order to centralize the serialization process and avoid hardcoding of response
      * data keys
      */
-    #[Route('/messages')]
-    public function list(Request $request, MessageRepository $messages): Response
+    #[Route('/messages', methods: ['GET'])]
+    public function list
+    (
+        MessageRepository $messageRepository,
+        SerializerInterface $serializer,
+        #[MapQueryParameter] ?string $status = null
+    ): JsonResponse
     {
-        $messages = $messages->by($request);
-  
-        foreach ($messages as $key=>$message) {
-            $messages[$key] = [
-                'uuid' => $message->getUuid(),
-                'text' => $message->getText(),
-                'status' => $message->getStatus(),
-            ];
+        if ($status !== null && !in_array($status, ['sent', 'read'])) {
+            return new JsonResponse(['error' => 'Invalid status'], Response::HTTP_BAD_REQUEST);
         }
-        
-        return new Response(json_encode([
-            'messages' => $messages,
-        ], JSON_THROW_ON_ERROR), headers: ['Content-Type' => 'application/json']);
+
+        $messages = $messageRepository->findByStatus($status);
+
+        $context = (new ObjectNormalizerContextBuilder())->withGroups('list')->toArray();
+        /**
+         * @var Serializer $serializer
+         */
+        $data = $serializer->normalize($messages, null, $context);
+
+        return new JsonResponse(['messages' => $data]);
     }
 
     /**

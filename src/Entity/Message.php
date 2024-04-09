@@ -6,6 +6,7 @@ use App\Repository\MessageRepository;
 use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
 /**
@@ -30,6 +31,7 @@ class Message
      * #[Assert\NotBlank]
      */
     #[ORM\Column(type: Types::GUID)]
+    #[Groups(['list'])]
     private ?string $uuid = null;
 
     /**
@@ -38,6 +40,7 @@ class Message
      * #[Assert\Length(max: 255)]
      */
     #[ORM\Column(length: 255)]
+    #[Groups(['list'])]
     private ?string $text = null;
 
     /**
@@ -54,6 +57,7 @@ class Message
      *
      */
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['list'])]
     private ?string $status = null;
 
     /**

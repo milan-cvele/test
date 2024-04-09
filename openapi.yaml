@@ -47,6 +47,33 @@ paths:
                     status: "sent"
                   - text: "Thanks, I'm fine. How about you?"
                     status: "sent"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '405':
+          description: Method Not Supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
   /messages/send:
     get:
       summary: Send a Message
