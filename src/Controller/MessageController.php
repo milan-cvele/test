@@ -13,15 +13,31 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @see MessageControllerTest
- * TODO: review both methods and also the `openapi.yaml` specification
- *       Add Comments for your Code-Review, so that the developer can understand why changes are needed.
- */
 class MessageController extends AbstractController
 {
     /**
      * TODO: cover this method with tests, and refactor the code (including other files that need to be refactored)
+     */
+    /**
+     * Route should be limited to GET method, only GET method should be used to retrieve data (RESTful standard) and
+     * all other methods should return code 405 for this endpoint.
+     *
+     * Every request exception on this route should be handled gracefully and should return response of application/json
+     * content type. This should be reflected in openapi.yaml specification.
+     *
+     * MessageRepository parameter name should be changed in order to avoid variable shadowing with $messages variable
+     * declared in method body
+     *
+     * Return type of method should be changed to JsonResponse in order to avoid manually constructing a JSON response
+     *
+     * Instead of Request, status should be passed to the repository method. Repository should not be concerned with
+     * parsing requests, its responsibility is retrieving data.
+     *
+     * Check should be implemented, when status parameter is present, if it is one of the valid statuses and if not,
+     * appropriate bad request response should be returned. This should also be documented in openapi.yaml file.
+     *
+     * Serializer should be utilized in order to centralize the serialization process and avoid hardcoding of response
+     * data keys
      */
     #[Route('/messages')]
     public function list(Request $request, MessageRepository $messages): Response
@@ -41,6 +57,22 @@ class MessageController extends AbstractController
         ], JSON_THROW_ON_ERROR), headers: ['Content-Type' => 'application/json']);
     }
 
+    /**
+     * POST request method should be used for this route, in order to adhere to RESTful standards, since it adds new
+     * record in the database. This should also be reflected in openapi.yaml specification.
+     *
+     * Bad Request response should be documented in openapi.yaml specification. And it should return content-type of
+     * application/json for all responses. It is not consistent to have one content-type for some request method and other for
+     * other request methods.For sake of consistency, this method should also have return type of JsonResponse
+     *
+     * Since SendMessage constructor expects string type variable, and 'get' method of request query returns mixed types,
+     * 'get' method should be replaced with 'getString' method
+     *
+     * Instead of hardcoding response codes, it is better to use Response class constants that represent them to improve
+     * code readability.
+     *
+     * 204 is No Content code, here 201 Created would be more suitable
+     */
     #[Route('/messages/send', methods: ['GET'])]
     public function send(Request $request, MessageBusInterface $bus): Response
     {
